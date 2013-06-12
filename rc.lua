@@ -1,3 +1,4 @@
+-- vim: set expandtab tabstop=4 foldmethod=marker
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -42,9 +43,9 @@ home = os.getenv("HOME")
 confdir = home .. "/.config/awesome"
 scriptdir = confdir .. "/scripts/"
 themes = confdir .. "/themes"
-active_theme = themes .. "/default"
-beautiful.init("/usr/local/share/awesome/themes/zenburn/theme.lua")
---beautiful.init(active_theme .. "/theme.lua")
+active_theme = themes .. "/steamburn"
+--beautiful.init("/usr/local/share/awesome/themes/zenburn/theme.lua")
+beautiful.init(active_theme .. "/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "gnome-terminal"
