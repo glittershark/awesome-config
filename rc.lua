@@ -43,8 +43,9 @@ home = os.getenv("HOME")
 confdir = home .. "/.config/awesome"
 scriptdir = confdir .. "/scripts/"
 themes = confdir .. "/themes"
-active_theme = themes .. "/steamburn"
+active_theme = themes .. "/glittershark"
 --beautiful.init("/usr/local/share/awesome/themes/zenburn/theme.lua")
+--beautiful.init("/home/smith/code/awesome-config/themes/glittershark/theme.lua")
 beautiful.init(active_theme .. "/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
