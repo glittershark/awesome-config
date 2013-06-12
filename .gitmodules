@@ -1,0 +1,9 @@
+[submodule "awesome-copycats"]
+	path = awesome-copycats
+	url = git://github.com/copycat-killer/awesome-copycats.git
+[submodule "yawn"]
+	path = yawn
+	url = https://github.com/copycat-killer/yawn.git
+[submodule "vicious"]
+	path = vicious
+	url = http://git.sysphere.org/vicious

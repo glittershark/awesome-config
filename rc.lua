@@ -38,11 +38,17 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/usr/local/share/awesome/themes/default/theme.lua")
+home = os.getenv("HOME")
+confdir = home .. "/.config/awesome"
+scriptdir = confdir .. "/scripts/"
+themes = confdir .. "/themes"
+active_theme = themes .. "/default"
+beautiful.init("/usr/local/share/awesome/themes/zenburn/theme.lua")
+--beautiful.init(active_theme .. "/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "xterm"
-editor = os.getenv("EDITOR") or "nano"
+terminal = "gnome-terminal"
+editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -80,10 +86,20 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
-tags = {}
+default = layouts[2]
+tags = {
+    {
+        names  = { "term"     , "editor"   , "www"      , "personal" , "misc" },
+        layout = { layouts[8] , default    , default    , default    , default }
+    },
+    {
+        names  = { "term"     , "work-web" , "monitor"  , "personal" , "misc" },
+        layout = { layouts[9] , layouts[3] , layouts[3] , layouts[8] , layouts[2] }
+    }  
+}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+    tags[s] = awful.tag(tags[s].names, s, tags[s].layout)
 end
 -- }}}
 
@@ -103,9 +119,6 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
-
--- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- {{{ Wibox
@@ -255,6 +268,20 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
     awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
+    
+    awful.key({ modkey,           }, "]",    
+        function () 
+            screen_no = client.focus.screen + 1 % (screen.count() + 1)
+            awful.screen.focus(screen_no)
+        end),
+    awful.key({ modkey,           }, "[",
+        function () 
+            screen_no = client.focus.screen - 1
+            if screen_no < 1 then 
+              screen_no = screen.count() 
+            end
+            awful.screen.focus(screen_no)
+        end),
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
@@ -277,7 +304,8 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
-    awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
+    awful.key({ modkey,           }, "s",      function (c) awful.client.movetoscreen()      end),
+    awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
     awful.key({ modkey,           }, "n",
         function (c)
@@ -346,7 +374,8 @@ awful.rules.rules = {
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
                      keys = clientkeys,
-                     buttons = clientbuttons } },
+                     buttons = clientbuttons,
+                     size_hints_honor = false } },
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
     { rule = { class = "pinentry" },
