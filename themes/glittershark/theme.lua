@@ -2,25 +2,66 @@
 -- Default awesome theme --
 ---------------------------
 
+-- Colors {{{
+-- Based on the Derp color scheme
+
+-- Black
+black         = "#111111"
+black_light   = "#666666"
+
+-- Red
+red           = "#d36265"
+red_light     = "#ef8171"
+
+-- Green
+green         = "#aece91"
+green_light   = "#cfefb3"
+
+-- Yellow
+yellow        = "#e7e18c"
+yellow_light  = "#ff/f7/96"
+
+-- Blue
+blue          = "#5297cf"
+blue_light    = "#74b8ef"
+
+-- Magenta
+magenta       = "#963c59"
+magenta_light = "#b85e7b"
+
+-- Cyan
+cyan          = "#5E7175"
+cyan_light    = "#A3BABF"
+
+-- White
+white         = "#bebebe"
+white_light   = "#ffffff"
+
+-- }}}
+
 theme = {}
 
-theme.font          = "sans 8"
+themes_dir          = os.getenv("HOME") .. "/.config/awesome/themes/glittershark"
 
-theme.bg_normal     = "#222222"
-theme.bg_focus      = "#535d6c"
-theme.bg_urgent     = "#ff0000"
-theme.bg_minimize   = "#444444"
+theme.font          = "Tamsyn 8"
+theme.taglist_font  = "Icons 10"
+
+theme.bg_normal     = black
+--theme.bg_focus      = "#535d6c"
+theme.bg_focus      = black
+theme.bg_urgent     = black_light
+theme.bg_minimize   = black
 theme.bg_systray    = theme.bg_normal
 
-theme.fg_normal     = "#aaaaaa"
-theme.fg_focus      = "#ffffff"
-theme.fg_urgent     = "#ffffff"
-theme.fg_minimize   = "#ffffff"
+theme.fg_normal     = white
+theme.fg_focus      = red_light
+theme.fg_urgent     = yellow
+theme.fg_minimize   = blue_light
 
 theme.border_width  = 1
-theme.border_normal = "#000000"
-theme.border_focus  = "#535d6c"
-theme.border_marked = "#91231c"
+theme.border_normal = black
+theme.border_focus  = black_light
+theme.border_marked = red
 
 -- There are other variable sets
 -- overriding the default one when
@@ -33,8 +74,8 @@ theme.border_marked = "#91231c"
 --theme.taglist_bg_focus = "#ff0000"
 
 -- Display the taglist squares
-theme.taglist_squares_sel   = "/usr/local/share/awesome/themes/default/taglist/squarefw.png"
-theme.taglist_squares_unsel = "/usr/local/share/awesome/themes/default/taglist/squarew.png"
+theme.taglist_squares_sel                   = themes_dir .. "/icons/square_sel.png"
+theme.taglist_squares_unsel                 = themes_dir .. "/icons/square_unsel.png"
 
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]
@@ -72,27 +113,27 @@ theme.titlebar_maximized_button_focus_inactive  = "/usr/local/share/awesome/them
 theme.titlebar_maximized_button_normal_active = "/usr/local/share/awesome/themes/default/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active  = "/usr/local/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
-theme.wallpaper = "/usr/local/share/awesome/themes/default/background.png"
+theme.wallpaper = "/usr/share/backgrounds/gnome/Stripes34.jpg"
 
 -- You can use your own layout icons like this:
-theme.layout_fairh = "/usr/local/share/awesome/themes/default/layouts/fairhw.png"
-theme.layout_fairv = "/usr/local/share/awesome/themes/default/layouts/fairvw.png"
-theme.layout_floating  = "/usr/local/share/awesome/themes/default/layouts/floatingw.png"
-theme.layout_magnifier = "/usr/local/share/awesome/themes/default/layouts/magnifierw.png"
-theme.layout_max = "/usr/local/share/awesome/themes/default/layouts/maxw.png"
-theme.layout_fullscreen = "/usr/local/share/awesome/themes/default/layouts/fullscreenw.png"
-theme.layout_tilebottom = "/usr/local/share/awesome/themes/default/layouts/tilebottomw.png"
-theme.layout_tileleft   = "/usr/local/share/awesome/themes/default/layouts/tileleftw.png"
-theme.layout_tile = "/usr/local/share/awesome/themes/default/layouts/tilew.png"
-theme.layout_tiletop = "/usr/local/share/awesome/themes/default/layouts/tiletopw.png"
-theme.layout_spiral  = "/usr/local/share/awesome/themes/default/layouts/spiralw.png"
-theme.layout_dwindle = "/usr/local/share/awesome/themes/default/layouts/dwindlew.png"
+theme.layout_tile                           = themes_dir .. "/icons/tile.png"
+theme.layout_tileleft                       = themes_dir .. "/icons/tileleft.png"
+theme.layout_tilebottom                     = themes_dir .. "/icons/tilebottom.png"
+theme.layout_tiletop                        = themes_dir .. "/icons/tiletop.png"
+theme.layout_fairv                          = themes_dir .. "/icons/fairv.png"
+theme.layout_fairh                          = themes_dir .. "/icons/fairh.png"
+theme.layout_spiral                         = themes_dir .. "/icons/spiral.png"
+theme.layout_dwindle                        = themes_dir .. "/icons/dwindle.png"
+theme.layout_max                            = themes_dir .. "/icons/max.png"
+theme.layout_fullscreen                     = themes_dir .. "/icons/fullscreen.png"
+theme.layout_magnifier                      = themes_dir .. "/icons/magnifier.png"
+theme.layout_floating                       = themes_dir .. "/icons/floating.png"
 
-theme.awesome_icon = "/usr/local/share/awesome/icons/awesome16.png"
+-- theme.awesome_icon = "/usr/local/share/awesome/icons/awesome16.png"
 
 -- Define the icon theme for application icons. If not set then the icons 
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
 theme.icon_theme = nil
 
 return theme
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80:foldmethod=marker
