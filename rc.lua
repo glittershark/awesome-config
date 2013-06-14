@@ -1,4 +1,4 @@
--- vim: set expandtab tabstop=4 foldmethod=marker
+-- vim: set expandtab tabstop=4 foldmethod=marker:
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -6,11 +6,14 @@ awful.rules = require("awful.rules")
 require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
+local vicious = require("vicious")
 -- Theme handling library
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
+-- Weather Widget
+local yawn = require("yawn")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -91,11 +94,13 @@ end
 default = layouts[2]
 tags = {
     {
-        names  = { "term"     , "editor"   , "www"      , "personal" , "misc" },
+        --names  = { "term"     , "editor"   , "www"      , "personal" , "misc" },
+       names = { "Ƅ", "ƈ", "ƀ", "Ɗ", "ƙ" },
         layout = { layouts[8] , default    , default    , default    , default }
     },
     {
-        names  = { "term"     , "work-web" , "monitor"  , "personal" , "misc" },
+        --names  = { "term"     , "work-web" , "monitor"  , "personal" , "misc" },
+       names = { "Ƅ", "ƀ", "Ɗ", "ƈ", "ƙ" },
         layout = { layouts[9] , layouts[3] , layouts[3] , layouts[8] , layouts[2] }
     }  
 }
@@ -124,13 +129,21 @@ mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 -- }}}
 
 -- {{{ Wibox
+
+-- Colours
+coldef  = "</span>"
+white  = "<span color='#d7d7d7'>"
+gray = "<span color='#9e9c9a'>"
+
 -- Create a textclock widget
-mytextclock = awful.widget.textclock()
+mytextclock = awful.widget.textclock(" %a, %b %d | %l:%M %p ")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
 mylayoutbox = {}
+
+-- Taglist {{{
 mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 1, awful.tag.viewonly),
@@ -140,6 +153,9 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
                     awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
                     )
+-- }}}
+
+-- Tasklist {{{
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
                      awful.button({ }, 1, function (c)
@@ -174,7 +190,169 @@ mytasklist.buttons = awful.util.table.join(
                                               awful.client.focus.byidx(-1)
                                               if client.focus then client.focus:raise() end
                                           end))
+-- }}}
 
+-- Register yawn
+yawn.register(2391279, '#D7D7D7', 'f')
+
+-- Gmail widget {{{
+mygmail = wibox.widget.textbox()
+gmail_t = awful.tooltip({ objects = { mygmail },})
+notify_shown = false
+mailcount = 0
+vicious.register(mygmail, vicious.widgets.gmail,
+ function (widget, args)
+  gmail_t:set_text(args["{subject}"])
+  gmail_t:add_to_object(mygmail)
+  notify_title = ""
+  notify_text = ""
+  mailcount = args["{count}"]
+  if (args["{count}"] > 0 ) then
+    if (notify_shown == false) then
+      -- Italian localization
+      -- can be a stub for your own localization
+      if (args["{count}"] == 1) then
+          notify_title = "You got a new mail"
+          notify_text = '"' .. args["{subject}"] .. '"'
+      else
+          notify_title = "You got " .. args["{count}"] .. " new emails"
+          notify_text = 'Last one: "' .. args["{subject}"] .. '"'
+      end
+      naughty.notify({
+          title = notify_title,
+          text = notify_text,
+          timeout = 7,
+          position = "top_left",
+          icon = beautiful.widget_mail_notify,
+          fg = beautiful.taglist_fg_focus,
+          bg = "#060606"
+      })
+      notify_shown = true
+    end
+    if yawn.icon == yawn.sky_na then return gray .. " Mail " .. coldef .. white .. args["{count}"]  .. " " .. coldef
+    else return gray .. " Mail " .. coldef .. white .. args["{count}"] .. coldef .. " <span font='Tamsyn 5'> </span><span font='Tamsyn 3'> </span>"
+    end
+  else
+    notify_shown = false
+    return ''
+  end
+end, 60)
+
+mygmail:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn(mail, false) end)))
+-- }}}
+
+-- Mpd widget {{{
+mpdwidget = wibox.widget.textbox()
+mpdwidget:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn_with_shell(musicplr) end)))
+curr_track = nil
+vicious.register(mpdwidget, vicious.widgets.mpd,
+function(widget, args)
+	if args["{state}"] == "Play" then
+    if args["{Title}"] ~= curr_track
+     then
+        curr_track = args["{Title}"]
+        os.execute(scriptdir .. "mpdinfo")
+        old_id = naughty.notify({
+            title = "Now playing",
+            text = args["{Artist}"] .. " (" .. args["{Album}"] .. ")\n" .. args["{Title}"],
+            icon = "/tmp/mpdnotify_cover.png",
+            bg = "#060606",
+            timeout = 5,
+            replaces_id = old_id
+        }).id
+    end
+   if yawn.icon == yawn.sky_na then return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. " " .. coldef
+    elseif mailcount == 0 then return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. "<span font='Tamsyn 8'>  <span font ='Tamsyn 2'> </span></span>" .. coldef
+    else return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. coldef .. "<span font='Tamsyn 8'> <span font='Tamsyn 2'> </span></span>" 
+    end
+	 elseif args["{state}"] == "Pause" then
+    if mailcount == 0 then return gray .. "mpd: " .. coldef .. white .. "paused<span font='Tamsyn 6'> </span> " .. coldef
+    else return gray .. "mpd: " .. coldef .. white .. "paused " .. coldef
+    end
+	else
+    curr_track = nil
+		return ''
+	end
+end, 1)
+-- }}}
+
+-- Battery widget {{{
+---[[
+batwidget = wibox.widget.textbox()
+function batstate()
+
+  local file = io.open("/sys/class/power_supply/BAT0/status", "r")
+
+  if (file == nil) then
+    return "Cable plugged"
+  end
+
+  local batstate = file:read("*line")
+  file:close()
+
+  if (batstate == 'Discharging' or batstate == 'Charging') then
+    return batstate
+  else
+    return "Fully charged"
+  end
+end
+vicious.register(batwidget, vicious.widgets.bat,
+function (widget, args)
+  -- plugged
+  if (batstate() == 'Cable plugged') then
+    return ''
+    -- critical
+  elseif (args[2] <= 5 and batstate() == 'Discharging') then
+    naughty.notify{
+      text = "sto per spegnermi...",
+      title = "Carica quasi esaurita!",
+      position = "top_right",
+      timeout = 0,
+      fg="#000000",
+      bg="#ffffff",
+      screen = 1,
+      ontop = true,
+    }
+    -- low
+  elseif (args[2] <= 10 and batstate() == 'Discharging') then
+    naughty.notify({
+      text = "attacca il cavo!",
+      title = "Carica bassa",
+      position = "top_right",
+      timeout = 0,
+      fg="#ffffff",
+      bg="#262729",
+      screen = 1,
+      ontop = true,
+    })
+  end
+  return gray .. "Bat " .. coldef .. white .. args[2] .. "% " .. coldef
+end, 1, 'BAT0')
+--]]
+-- }}}
+
+-- Volume widget {{{
+volumewidget = wibox.widget.textbox()
+vicious.register(volumewidget, vicious.widgets.volume,
+function (widget, args)
+  if (args[2] ~= "♩" ) then
+     return gray .. "Vol " .. coldef .. white .. args[1] .. "% " .. coldef
+  else
+     return gray .. "Vol " .. coldef .. white .. "X " .. coldef
+  end
+end, 1, "Master")
+-- }}}
+
+-- Separators {{{
+spr = wibox.widget.textbox(' ')
+first = wibox.widget.textbox('<span font="Droid Sans Mono 8"> </span>')
+--arrl_pre = wibox.widget.imagebox()
+--arrl_pre:set_image(beautiful.arrl_lr_pre)
+--arrl_post = wibox.widget.imagebox()
+--arrl_post:set_image(beautiful.arrl_lr_post)
+-- }}}
+
+-- Initialize wibox {{{
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
     mypromptbox[s] = awful.widget.prompt()
@@ -197,15 +375,28 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
-    left_layout:add(mylauncher)
+    --left_layout:add(mylauncher)
+    left_layout:add(first)
     left_layout:add(mytaglist[s])
+    --left_layout:add(arrl_pre)
     left_layout:add(mypromptbox[s])
+    --left_layout:add(arrl_post)
+    left_layout:add(mylayoutbox[s])
+    left_layout:add(first)
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(first)
+    if s == 1 then right_layout:add(mpdwidget) end
+    right_layout:add(mygmail)
+    right_layout:add(yawn.icon)
+    right_layout:add(yawn.widget)
+    right_layout:add(volumewidget)
+    right_layout:add(spr)
+    right_layout:add(batwidget)
+    right_layout:add(spr)
     right_layout:add(mytextclock)
-    right_layout:add(mylayoutbox[s])
 
     -- Now bring it all together (with the tasklist in the middle)
     local layout = wibox.layout.align.horizontal()
@@ -215,6 +406,7 @@ for s = 1, screen.count() do
 
     mywibox[s]:set_widget(layout)
 end
+-- }}}
 -- }}}
 
 -- {{{ Mouse bindings
@@ -303,7 +495,7 @@ globalkeys = awful.util.table.join(
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
+    awful.key({ modkey, "Shift"   }, "x",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, "s",      function (c) awful.client.movetoscreen()      end),
