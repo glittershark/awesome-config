@@ -66,18 +66,18 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
 {
-    awful.layout.suit.floating,
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier
+    -- awful.layout.suit.floating,
+    -- awful.layout.suit.tile,
+    awful.layout.suit.tile.left,      -- 1
+    awful.layout.suit.tile.bottom,    -- 2
+    awful.layout.suit.tile.top,       -- 3
+    -- awful.layout.suit.fair,
+    -- awful.layout.suit.fair.horizontal,
+    awful.layout.suit.spiral,         -- 4
+    -- awful.layout.suit.spiral.dwindle,
+    -- awful.layout.suit.max,
+    awful.layout.suit.max.fullscreen, -- 5
+    -- awful.layout.suit.magnifier
 }
 -- }}}
 
@@ -91,17 +91,17 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
-default = layouts[2]
+default = layouts[1]
 tags = {
     {
         --names  = { "term"     , "editor"   , "www"      , "personal" , "misc" },
-       names = { "Ƅ", "ƈ", "ƀ", "Ɗ", "ƙ" },
-        layout = { layouts[8] , default    , default    , default    , default }
+        names  = { "Ƅ"     , "ƈ"     , "ƀ"     , "Ɗ"     , "ƙ"     },
+        layout = { default , default , default , default , default }
     },
     {
         --names  = { "term"     , "work-web" , "monitor"  , "personal" , "misc" },
-       names = { "Ƅ", "ƀ", "Ɗ", "ƈ", "ƙ" },
-        layout = { layouts[9] , layouts[3] , layouts[3] , layouts[8] , layouts[2] }
+        names  = { "Ƅ"     , "ƀ"        , "Ɗ"     , "ƈ"     , "ƙ"     },
+        layout = { default , layouts[3] , default , default , default }
     }  
 }
 for s = 1, screen.count() do
@@ -582,7 +582,7 @@ awful.rules.rules = {
 }
 -- }}}
 
--- {{{ Signals
+-- Signals {{{ 
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function (c, startup)
     -- Enable sloppy focus
