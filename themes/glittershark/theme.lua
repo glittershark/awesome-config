@@ -1,6 +1,6 @@
----------------------------
--- Default awesome theme --
----------------------------
+--------------------------------
+-- Glittershark awesome theme --
+--------------------------------
 
 -- Colors {{{
 -- Based on the Derp color scheme
@@ -49,7 +49,7 @@ theme.taglist_font  = "Icons 10"
 theme.bg_normal     = black
 --theme.bg_focus      = "#535d6c"
 theme.bg_focus      = black
-theme.bg_urgent     = black_light
+theme.bg_urgent     = black
 theme.bg_minimize   = black
 theme.bg_systray    = theme.bg_normal
 
@@ -89,45 +89,50 @@ theme.menu_width  = 100
 -- beautiful.variable in your rc.lua
 --theme.bg_widget = "#cc0000"
 
+theme.caffeine_active            = themes_dir .. "/icons/caffeine-active.png"
+theme.caffeine_highlightedactive = themes_dir .. "/icons/caffeine-highlightedactive.png"
+theme.caffeine_inactive          = themes_dir .. "/icons/caffeine-inactive.png"
+theme.caffeine_highlighted       = themes_dir .. "/icons/caffeine-highlighted.png"
+
 -- Define the image to load
-theme.titlebar_close_button_normal = "/usr/local/share/awesome/themes/default/titlebar/close_normal.png"
-theme.titlebar_close_button_focus  = "/usr/local/share/awesome/themes/default/titlebar/close_focus.png"
+theme.titlebar_close_button_normal              = "/usr/local/share/awesome/themes/default/titlebar/close_normal.png"
+theme.titlebar_close_button_focus               = "/usr/local/share/awesome/themes/default/titlebar/close_focus.png"
 
-theme.titlebar_ontop_button_normal_inactive = "/usr/local/share/awesome/themes/default/titlebar/ontop_normal_inactive.png"
-theme.titlebar_ontop_button_focus_inactive  = "/usr/local/share/awesome/themes/default/titlebar/ontop_focus_inactive.png"
-theme.titlebar_ontop_button_normal_active = "/usr/local/share/awesome/themes/default/titlebar/ontop_normal_active.png"
-theme.titlebar_ontop_button_focus_active  = "/usr/local/share/awesome/themes/default/titlebar/ontop_focus_active.png"
+theme.titlebar_ontop_button_normal_inactive     = "/usr/local/share/awesome/themes/default/titlebar/ontop_normal_inactive.png"
+theme.titlebar_ontop_button_focus_inactive      = "/usr/local/share/awesome/themes/default/titlebar/ontop_focus_inactive.png"
+theme.titlebar_ontop_button_normal_active       = "/usr/local/share/awesome/themes/default/titlebar/ontop_normal_active.png"
+theme.titlebar_ontop_button_focus_active        = "/usr/local/share/awesome/themes/default/titlebar/ontop_focus_active.png"
 
-theme.titlebar_sticky_button_normal_inactive = "/usr/local/share/awesome/themes/default/titlebar/sticky_normal_inactive.png"
-theme.titlebar_sticky_button_focus_inactive  = "/usr/local/share/awesome/themes/default/titlebar/sticky_focus_inactive.png"
-theme.titlebar_sticky_button_normal_active = "/usr/local/share/awesome/themes/default/titlebar/sticky_normal_active.png"
-theme.titlebar_sticky_button_focus_active  = "/usr/local/share/awesome/themes/default/titlebar/sticky_focus_active.png"
+theme.titlebar_sticky_button_normal_inactive    = "/usr/local/share/awesome/themes/default/titlebar/sticky_normal_inactive.png"
+theme.titlebar_sticky_button_focus_inactive     = "/usr/local/share/awesome/themes/default/titlebar/sticky_focus_inactive.png"
+theme.titlebar_sticky_button_normal_active      = "/usr/local/share/awesome/themes/default/titlebar/sticky_normal_active.png"
+theme.titlebar_sticky_button_focus_active       = "/usr/local/share/awesome/themes/default/titlebar/sticky_focus_active.png"
 
-theme.titlebar_floating_button_normal_inactive = "/usr/local/share/awesome/themes/default/titlebar/floating_normal_inactive.png"
-theme.titlebar_floating_button_focus_inactive  = "/usr/local/share/awesome/themes/default/titlebar/floating_focus_inactive.png"
-theme.titlebar_floating_button_normal_active = "/usr/local/share/awesome/themes/default/titlebar/floating_normal_active.png"
-theme.titlebar_floating_button_focus_active  = "/usr/local/share/awesome/themes/default/titlebar/floating_focus_active.png"
+theme.titlebar_floating_button_normal_inactive  = "/usr/local/share/awesome/themes/default/titlebar/floating_normal_inactive.png"
+theme.titlebar_floating_button_focus_inactive   = "/usr/local/share/awesome/themes/default/titlebar/floating_focus_inactive.png"
+theme.titlebar_floating_button_normal_active    = "/usr/local/share/awesome/themes/default/titlebar/floating_normal_active.png"
+theme.titlebar_floating_button_focus_active     = "/usr/local/share/awesome/themes/default/titlebar/floating_focus_active.png"
 
 theme.titlebar_maximized_button_normal_inactive = "/usr/local/share/awesome/themes/default/titlebar/maximized_normal_inactive.png"
 theme.titlebar_maximized_button_focus_inactive  = "/usr/local/share/awesome/themes/default/titlebar/maximized_focus_inactive.png"
-theme.titlebar_maximized_button_normal_active = "/usr/local/share/awesome/themes/default/titlebar/maximized_normal_active.png"
-theme.titlebar_maximized_button_focus_active  = "/usr/local/share/awesome/themes/default/titlebar/maximized_focus_active.png"
+theme.titlebar_maximized_button_normal_active   = "/usr/local/share/awesome/themes/default/titlebar/maximized_normal_active.png"
+theme.titlebar_maximized_button_focus_active    = "/usr/local/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
 theme.wallpaper = "/usr/share/backgrounds/gnome/Stripes34.jpg"
 
 -- You can use your own layout icons like this:
-theme.layout_tile                           = themes_dir .. "/icons/tile.png"
-theme.layout_tileleft                       = themes_dir .. "/icons/tileleft.png"
-theme.layout_tilebottom                     = themes_dir .. "/icons/tilebottom.png"
-theme.layout_tiletop                        = themes_dir .. "/icons/tiletop.png"
-theme.layout_fairv                          = themes_dir .. "/icons/fairv.png"
-theme.layout_fairh                          = themes_dir .. "/icons/fairh.png"
-theme.layout_spiral                         = themes_dir .. "/icons/spiral.png"
-theme.layout_dwindle                        = themes_dir .. "/icons/dwindle.png"
-theme.layout_max                            = themes_dir .. "/icons/max.png"
-theme.layout_fullscreen                     = themes_dir .. "/icons/fullscreen.png"
-theme.layout_magnifier                      = themes_dir .. "/icons/magnifier.png"
-theme.layout_floating                       = themes_dir .. "/icons/floating.png"
+theme.layout_tile       = themes_dir .. "/icons/tile.png"
+theme.layout_tileleft   = themes_dir .. "/icons/tileleft.png"
+theme.layout_tilebottom = themes_dir .. "/icons/tilebottom.png"
+theme.layout_tiletop    = themes_dir .. "/icons/tiletop.png"
+theme.layout_fairv      = themes_dir .. "/icons/fairv.png"
+theme.layout_fairh      = themes_dir .. "/icons/fairh.png"
+theme.layout_spiral     = themes_dir .. "/icons/spiral.png"
+theme.layout_dwindle    = themes_dir .. "/icons/dwindle.png"
+theme.layout_max        = themes_dir .. "/icons/max.png"
+theme.layout_fullscreen = themes_dir .. "/icons/fullscreen.png"
+theme.layout_magnifier  = themes_dir .. "/icons/magnifier.png"
+theme.layout_floating   = themes_dir .. "/icons/floating.png"
 
 -- theme.awesome_icon = "/usr/local/share/awesome/icons/awesome16.png"
 

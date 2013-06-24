@@ -1,4 +1,4 @@
--- vim: set expandtab tabstop=4 foldmethod=marker:
+-- vim: set expandtab tabstop=4 foldmethod=marker shiftwidth=4:
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -67,16 +67,16 @@ modkey = "Mod4"
 local layouts =
 {
     -- awful.layout.suit.floating,
-    -- awful.layout.suit.tile,
-    awful.layout.suit.tile.left,      -- 1
-    awful.layout.suit.tile.bottom,    -- 2
-    awful.layout.suit.tile.top,       -- 3
+    awful.layout.suit.tile,           -- 1
+    awful.layout.suit.tile.left,      -- 2
+    awful.layout.suit.tile.bottom,    -- 3
+    awful.layout.suit.tile.top,       -- 4
     -- awful.layout.suit.fair,
     -- awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,         -- 4
+    awful.layout.suit.spiral,         -- 5
     -- awful.layout.suit.spiral.dwindle,
     -- awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen, -- 5
+    awful.layout.suit.max.fullscreen, -- 6
     -- awful.layout.suit.magnifier
 }
 -- }}}
@@ -101,7 +101,7 @@ tags = {
     {
         --names  = { "term"     , "work-web" , "monitor"  , "personal" , "misc" },
         names  = { "Ƅ"     , "ƀ"        , "Ɗ"     , "ƈ"     , "ƙ"     },
-        layout = { default , layouts[3] , default , default , default }
+        layout = { default , layouts[4] , default , default , default }
     }  
 }
 for s = 1, screen.count() do
@@ -243,7 +243,8 @@ mygmail:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.uti
 
 -- Mpd widget {{{
 mpdwidget = wibox.widget.textbox()
-mpdwidget:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn_with_shell(musicplr) end)))
+--mpdwidget:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn_with_shell(musicplr) end)))
+mpdwidget:buttons(awful.util.table.join(awful.button({ }, 1, function () os.execute("mpc toggle") end)))
 curr_track = nil
 vicious.register(mpdwidget, vicious.widgets.mpd,
 function(widget, args)
@@ -299,6 +300,7 @@ end
 vicious.register(batwidget, vicious.widgets.bat,
 function (widget, args)
   -- plugged
+  --[[
   if (batstate() == 'Cable plugged') then
     return ''
     -- critical
@@ -326,6 +328,7 @@ function (widget, args)
       ontop = true,
     })
   end
+    --]]
   return gray .. "Bat " .. coldef .. white .. args[2] .. "% " .. coldef
 end, 1, 'BAT0')
 --]]
@@ -341,6 +344,58 @@ function (widget, args)
      return gray .. "Vol " .. coldef .. white .. "X " .. coldef
   end
 end, 1, "Master")
+volumewidget:buttons(awful.util.table.join(
+    awful.button({ }, 1, function () os.execute("amixer set Master toggle") end)))
+-- }}}
+
+-- Caffeine {{{
+
+function setKey(schema, key, value)
+    os.execute("gsettings set " .. schema .. " " .. key .. " '" .. value .. "'")
+end
+
+-- Get current sleep state
+-- HACK ALERT
+local sleepHandle = io.popen("gsettings get org.gnome.settings-daemon.plugins.power idle-dim-time")
+sleepOn = not sleepHandle:read("*a") == "0"
+sleepHandle:close()
+
+function toggleSleep()
+    local schema = "org.gnome.settings-daemon.plugins.power"
+    
+    if sleepOn then
+        setKey(schema, "idle-dim-time", "0")
+        setKey(schema, "sleep-display-ac", "0")
+        setKey(schema, "sleep-display-battery", "0")
+    else
+        setKey(schema, "idle-dim-time", "30")
+        setKey(schema, "sleep-display-ac", "300")
+        setKey(schema, "sleep-display-battery", "300")
+    end
+
+    sleepOn = not sleepOn
+    return sleepOn
+end
+
+caffeine = wibox.widget.imagebox()
+if sleepOn then
+    caffeine:set_image(beautiful.caffeine_highlighted)
+else
+    caffeine:set_image(beautiful.caffeine_highlightedactive)
+end
+
+--caffeine = wibox.widget.textbox(gray .. "Caf" .. coldef)
+
+caffeine:buttons(awful.util.table.join(awful.button({ }, 1, 
+    function () 
+        if toggleSleep() then
+            --caffeine:set_markup(gray .. "Caf" .. coldef)
+            caffeine:set_image(beautiful.caffeine_highlighted)
+        else
+            --caffeine:set_markup(white .. "Caf" .. coldef)
+            caffeine:set_image(beautiful.caffeine_highlightedactive)
+        end
+    end)))
 -- }}}
 
 -- Separators {{{
@@ -388,10 +443,14 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(first)
-    if s == 1 then right_layout:add(mpdwidget) end
     right_layout:add(mygmail)
     right_layout:add(yawn.icon)
     right_layout:add(yawn.widget)
+    right_layout:add(spr)
+    right_layout:add(caffeine)
+    right_layout:add(spr)
+    right_layout:add(spr)
+    if s == 1 then right_layout:add(mpdwidget) end
     right_layout:add(volumewidget)
     right_layout:add(spr)
     right_layout:add(batwidget)
