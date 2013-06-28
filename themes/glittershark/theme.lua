@@ -118,7 +118,7 @@ theme.titlebar_maximized_button_focus_inactive  = "/usr/local/share/awesome/them
 theme.titlebar_maximized_button_normal_active   = "/usr/local/share/awesome/themes/default/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active    = "/usr/local/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
-theme.wallpaper = "/usr/share/backgrounds/gnome/Stripes34.jpg"
+theme.wallpaper = "/home/smith/pictures/backgrounds/wireballblack.png"
 
 -- You can use your own layout icons like this:
 theme.layout_tile       = themes_dir .. "/icons/tile.png"

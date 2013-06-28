@@ -52,7 +52,7 @@ active_theme = themes .. "/glittershark"
 beautiful.init(active_theme .. "/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "gnome-terminal"
+terminal = "gnome-terminal --hide-menubar"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -136,7 +136,7 @@ white  = "<span color='#d7d7d7'>"
 gray = "<span color='#9e9c9a'>"
 
 -- Create a textclock widget
-mytextclock = awful.widget.textclock(" %a, %b %d | %l:%M %p ")
+mytextclock = awful.widget.textclock(" %a, %b %d | %I:%M %p ")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -531,7 +531,7 @@ globalkeys = awful.util.table.join(
         function () 
             screen_no = client.focus.screen - 1
             if screen_no < 1 then 
-              screen_no = screen.count() 
+              screen_no = screen.count()
             end
             awful.screen.focus(screen_no)
         end),
@@ -549,7 +549,18 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_eval")
               end),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end)
+    awful.key({ modkey }, "p",     function() menubar.show() end),
+
+    --Fn keys
+    awful.key({        }, "XF86MonBrightnessUp",   function() awful.util.spawn("xbacklight -inc 10")       end),
+    awful.key({        }, "XF86MonBrightnessDown", function() awful.util.spawn("xbacklight -dec 5")        end),
+    awful.key({        }, "XF86AudioPrev",         function() awful.util.spawn("mpc prev")                 end),
+    awful.key({        }, "XF86AudioPlay",         function() awful.util.spawn("mpc toggle")               end),
+    awful.key({        }, "XF86AudioNext",         function() awful.util.spawn("mpc next")                 end),
+    awful.key({        }, "XF86AudioMute",         function() awful.util.spawn("amixer set Master toggle") end),
+    awful.key({        }, "XF86AudioRaiseVolume",  function() awful.util.spawn("amixer set Master 5%+")    end),
+    awful.key({        }, "XF86AudioLowerVolume",  function() awful.util.spawn("amixer set Master 5%-")    end),
+    awful.key({        }, "XF86Eject",             function() awful.util.spawn("slimlock")                 end)
 )
 
 clientkeys = awful.util.table.join(
@@ -563,7 +574,7 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "n",
         function (c)
             -- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized clients can't have the focus.
+            -- minimized, since minimized 5clients can't have the focus.
             c.minimized = true
         end),
     awful.key({ modkey,           }, "m",
