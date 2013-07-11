@@ -1,19 +1,15 @@
 -- vim: set expandtab tabstop=4 foldmethod=marker shiftwidth=4:
 -- Standard awesome library
-local gears = require("gears")
-local awful = require("awful")
-awful.rules = require("awful.rules")
-require("awful.autofocus")
--- Widget and layout library
-local wibox = require("wibox")
-local vicious = require("vicious")
--- Theme handling library
-local beautiful = require("beautiful")
--- Notification library
-local naughty = require("naughty")
-local menubar = require("menubar")
--- Weather Widget
-local yawn = require("yawn")
+gears           = require("gears")
+awful           = require("awful")
+awful.rules     = require("awful.rules")
+awful.autofocus = require("awful.autofocus")
+wibox           = require("wibox")
+vicious         = require("vicious")
+beautiful       = require("beautiful")
+naughty         = require("naughty")
+menubar         = require("menubar")
+yawn            = require("yawn")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -55,12 +51,12 @@ beautiful.init(active_theme .. "/theme.lua")
 terminal = "gnome-terminal --hide-menubar"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
+gui_editor = "gvim "
+browser = "firefox"
+tasks = terminal .. " -e htop "
+wifi = terminal .. " -e 'sudo wifi-menu'"
 
 -- Default modkey.
--- Usually, Mod4 is the key with a logo between Control and Alt.
--- If you do not like this or do not have such a key,
--- I suggest you to remap Mod4 to another key using xmodmap or other tools.
--- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
@@ -348,6 +344,31 @@ volumewidget:buttons(awful.util.table.join(
     awful.button({ }, 1, function () os.execute("amixer set Master toggle") end)))
 -- }}}
 
+-- Mem widget {{{
+memwidget = wibox.widget.textbox()
+vicious.register(memwidget, vicious.widgets.mem,
+    gray .. "Mem " .. coldef .. white .. "$2 " .. coldef, 13) -- in Megabytes
+-- }}}
+
+-- CPU widget {{{
+cpuwidget = wibox.widget.textbox()
+vicious.register(cpuwidget, vicious.widgets.cpu,
+    gray .. "Cpu " .. coldef .. white .. "$1 " .. coldef, 3)
+cpuwidget:buttons(awful.util.table.join(
+    awful.button({ }, 1, function () awful.util.spawn(tasks, false) end)))
+-- }}}
+
+-- Net widget {{{
+netwidget = wibox.widget.textbox()
+vicious.register(netwidget, vicious.widgets.net,
+    gray .. "Net " .. coldef .. white .. "${wlp3s0 down_kb} " 
+         .. "<span font=\"Terminus 8\">↓↑ </span>" .. "${wlp3s0 up_kb} " .. coldef, 3)
+--neticon = wibox.widget.imagebox()
+--neticon:set_image(beautiful.widget_net)
+netwidget:buttons(awful.util.table.join(
+    awful.button({ }, 1, function () awful.util.spawn_with_shell(wifi) end)))
+-- }}}
+
 -- Caffeine {{{
 
 function setKey(schema, key, value)
@@ -450,6 +471,12 @@ for s = 1, screen.count() do
     right_layout:add(caffeine)
     right_layout:add(spr)
     right_layout:add(spr)
+    right_layout:add(cpuwidget)
+    right_layout:add(spr)
+    right_layout:add(memwidget)
+    right_layout:add(spr)
+    right_layout:add(netwidget)
+    right_layout:add(spr)
     if s == 1 then right_layout:add(mpdwidget) end
     right_layout:add(volumewidget)
     right_layout:add(spr)
@@ -492,7 +519,8 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
+    --awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
+    awful.key({ modkey,           }, "w", function () awful.util.spawn_with_shell("sudo wifi-menu") end),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
