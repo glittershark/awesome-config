@@ -44,7 +44,7 @@ theme = {}
 themes_dir          = os.getenv("HOME") .. "/.config/awesome/themes/glittershark"
 
 theme.font          = "Tamsyn 8"
-theme.taglist_font  = "Icons 10"
+theme.taglist_font  = "Tamsyn 8"
 
 theme.bg_normal     = black
 --theme.bg_focus      = "#535d6c"
@@ -118,7 +118,7 @@ theme.titlebar_maximized_button_focus_inactive  = "/usr/local/share/awesome/them
 theme.titlebar_maximized_button_normal_active   = "/usr/local/share/awesome/themes/default/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active    = "/usr/local/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
-theme.wallpaper = "/home/smith/pictures/backgrounds/wireballblack.png"
+theme.wallpaper = "/home/smith/pictures/backgrounds/archlinux-wp.png"
 
 -- You can use your own layout icons like this:
 theme.layout_tile       = themes_dir .. "/icons/tile.png"

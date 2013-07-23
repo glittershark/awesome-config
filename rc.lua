@@ -10,6 +10,7 @@ beautiful       = require("beautiful")
 naughty         = require("naughty")
 menubar         = require("menubar")
 yawn            = require("yawn")
+tyrannical      = require("tyrannical")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -38,23 +39,25 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-home = os.getenv("HOME")
-confdir = home .. "/.config/awesome"
-scriptdir = confdir .. "/scripts/"
-themes = confdir .. "/themes"
+home         = os.getenv("HOME")
+confdir      = home .. "/.config/awesome"
+scriptdir    = confdir .. "/scripts/"
+themes       = confdir .. "/themes"
 active_theme = themes .. "/glittershark"
 --beautiful.init("/usr/local/share/awesome/themes/zenburn/theme.lua")
 --beautiful.init("/home/smith/code/awesome-config/themes/glittershark/theme.lua")
 beautiful.init(active_theme .. "/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "gnome-terminal --hide-menubar"
-editor = os.getenv("EDITOR") or "editor"
+terminal   = "xterm"
+editor     = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 gui_editor = "gvim "
-browser = "firefox"
-tasks = terminal .. " -e htop "
-wifi = terminal .. " -e 'sudo wifi-menu'"
+browser    = "firefox"
+tasks      = terminal .. " -e htop "
+wifi       = terminal .. " -e 'sudo wifi-menu'"
+scrot      = "scrot -e 'mv $f ~/pictures/screenshots/'"
+scrotwin   = "scrot -se 'mv $f ~/pictures/screenshots/'"
 
 -- Default modkey.
 modkey = "Mod4"
@@ -87,6 +90,7 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
+--[[ {{{
 default = layouts[1]
 tags = {
     {
@@ -104,6 +108,76 @@ for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag(tags[s].names, s, tags[s].layout)
 end
+--]] 
+--}}}
+
+tyrannical.tags = {
+    {
+        name      = "Term",
+        init      = true,
+        exclusive = false,
+        screen    = {1,2},
+        layout    = awful.layout.suit.tile,
+        class     = {
+            "xterm", "urxvt", "aterm", "URxvt", "XTerm", "konsole", "terminator", "gnome-terminal"
+        }
+    },
+    {
+        name      = "Editor",
+        init      = true,
+        exclusive = false,
+        screen    = screen.count()>1 and 2 or 1,
+        layout    = awful.layout.suit.tile,
+        exec_once = {"gvim"},
+        --class     = {"gvim", "Gvim"}
+    },
+    {
+        name      = "Web",
+        init      = true,
+        exclusive = false,
+        screen    = {1,2},
+        layout    = awful.layout.suit.tile.top,
+        exec_once = {"firefox"},
+        class = {
+            "Opera", "Firefox", "Rekonq", "Dillo", "Arora", "Chromium", "nightly", "minefield"
+        }
+    },
+    {
+        name      = "Notes",
+        init      = true,
+        exclusive = false,
+        screen    = {1},
+        layout    = awful.layout.suit.tile,
+        exec_once = {"gvim /home/smith/todo.txt"}
+        -- class     = {"gvim", "Gvim"}
+    },
+    {
+        name      = "Etc",
+        init      = false,
+        exclusive = false,
+        volatile  = true,
+        screen    = {1,2},
+        layout    = awful.layout.suit.tile
+    },
+    {
+        name      = "RandR",
+        init      = false,
+        exclusive = true,
+        volatile  = true,
+        screen    = 1,
+        layout    = awful.layout.suit.max,
+        class     = {"arandr"}
+    },
+    {
+        name      = "VBox",
+        init      = false,
+        exclusive = true,
+        volatile  = true,
+        screen    = screen.count()>1 and 2 or 1,
+        layout    = awful.layout.suit.tile,
+        class     = { "virtualbox" }
+    }
+}
 -- }}}
 
 -- {{{ Menu
@@ -278,6 +352,8 @@ end, 1)
 
 -- Battery widget {{{
 ---[[
+local shown_low_notification      = false
+local shown_critical_notification = false
 batwidget = wibox.widget.textbox()
 function batstate()
 
@@ -298,37 +374,41 @@ function batstate()
 end
 vicious.register(batwidget, vicious.widgets.bat,
 function (widget, args)
-  -- plugged
-  --[[
-  if (batstate() == 'Cable plugged') then
-    return ''
-    -- critical
-  elseif (args[2] <= 5 and batstate() == 'Discharging') then
-    naughty.notify{
-      text = "sto per spegnermi...",
-      title = "Carica quasi esaurita!",
-      position = "top_right",
-      timeout = 0,
-      fg="#000000",
-      bg="#ffffff",
-      screen = 1,
-      ontop = true,
-    }
-    -- low
-  elseif (args[2] <= 10 and batstate() == 'Discharging') then
-    naughty.notify({
-      text = "attacca il cavo!",
-      title = "Carica bassa",
-      position = "top_right",
-      timeout = 0,
-      fg="#ffffff",
-      bg="#262729",
-      screen = 1,
-      ontop = true,
-    })
-  end
+    -- plugged
+    ---[[
+    if (batstate() == 'Cable plugged') then
+        shown_low_notification      = false
+        shown_critical_notification = false
+        return ''
+        -- critical
+    elseif (args[2] <= 5 and batstate() == 'Discharging' and not shown_critical_notification) then
+        naughty.notify{
+            text     = "About to shut down",
+            title    = "Battery critically low",
+            position = "top_right",
+            timeout  = 0,
+            fg       = "#000000",
+            bg       = "#ffffff",
+            screen   = screen.count() > 1 and 2 or 1,
+            ontop    = true,
+        }
+        shown_critical_notification = true
+        -- low
+    elseif (args[2] <= 10 and batstate() == 'Discharging' and not shown_low_notification) then
+        naughty.notify({
+            text     = "Plug in your computer!",
+            title    = "Battery low",
+            position = "top_right",
+            timeout  = 0,
+            fg       = "#ffffff",
+            bg       = "#262729",
+            screen   = screen.count() > 1 and 2 or 1,
+            ontop    = true,
+        })
+        shown_low_notification = true
+    end
     --]]
-  return gray .. "Bat " .. coldef .. white .. args[2] .. "% " .. coldef
+    return gray .. "Bat " .. coldef .. white .. args[2] .. "% " .. coldef
 end, 1, 'BAT0')
 --]]
 -- }}}
@@ -465,13 +545,13 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(wibox.widget.systray())
     right_layout:add(first)
     right_layout:add(mygmail)
     right_layout:add(yawn.icon)
     right_layout:add(yawn.widget)
     right_layout:add(spr)
-    right_layout:add(caffeine)
+    -- right_layout:add(caffeine)
     right_layout:add(spr)
     right_layout:add(spr)
     right_layout:add(cpuwidget)
@@ -480,7 +560,7 @@ for s = 1, screen.count() do
     right_layout:add(spr)
     right_layout:add(netwidget)
     right_layout:add(spr)
-    if s == 1 then right_layout:add(mpdwidget) end
+    right_layout:add(mpdwidget)
     right_layout:add(volumewidget)
     right_layout:add(spr)
     right_layout:add(batwidget)
@@ -542,7 +622,9 @@ globalkeys = awful.util.table.join(
 
     -- Standard program {{{
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
-    awful.key({ modkey, "Shift"   }, "w",      function() awful.util.spawn(wifi) end),
+    awful.key({ modkey, "Shift"   }, "w",      function () awful.util.spawn(wifi)     end),
+    awful.key({ modkey, "Shift"   }, "s",      function () awful.util.spawn(scrot)    end), 
+    awful.key({ modkey, "Control" }, "s",      function () awful.util.spawn(scrotwin) end),
 
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
@@ -626,38 +708,55 @@ clientkeys = awful.util.table.join(
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
+function add_etc()
+    return awful.tag.add(#awful.tag.gettags(mouse.screen) + 1,
+    {
+        screen   = client.focus.screen,
+        layout   = awful.layout.suit.tile,
+        volatile = true
+    })
+end
+
 for i = 1, 9 do
     globalkeys = awful.util.table.join(globalkeys,
-        awful.key({ modkey }, "#" .. i + 9,
-                  function ()
-                        local screen = mouse.screen
-                        local tag = awful.tag.gettags(screen)[i]
-                        if tag then
-                           awful.tag.viewonly(tag)
-                        end
-                  end),
-        awful.key({ modkey, "Control" }, "#" .. i + 9,
-                  function ()
-                      local screen = mouse.screen
-                      local tag = awful.tag.gettags(screen)[i]
-                      if tag then
-                         awful.tag.viewtoggle(tag)
-                      end
-                  end),
-        awful.key({ modkey, "Shift" }, "#" .. i + 9,
-                  function ()
-                      local tag = awful.tag.gettags(client.focus.screen)[i]
-                      if client.focus and tag then
-                          awful.client.movetotag(tag)
-                     end
-                  end),
-        awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
-                  function ()
-                      local tag = awful.tag.gettags(client.focus.screen)[i]
-                      if client.focus and tag then
-                          awful.client.toggletag(tag)
-                      end
-                  end))
+    awful.key({ modkey }, "#" .. i + 9,
+    function ()
+        local screen = mouse.screen
+        local tag = awful.tag.gettags(screen)[i]
+        if not tag then 
+            tag = add_etc()
+        end
+        awful.tag.viewonly(tag)
+    end),
+    awful.key({ modkey, "Control" }, "#" .. i + 9,
+    function ()
+        local screen = mouse.screen
+        local tag = awful.tag.gettags(screen)[i]
+        if not tag then
+            tag = add_etc()
+        end
+        awful.tag.viewtoggle(tag)
+    end),
+    awful.key({ modkey, "Shift" }, "#" .. i + 9,
+    function ()
+        local tag = awful.tag.gettags(client.focus.screen)[i]
+        if client.focus then
+            if not tag then
+                tag = add_etc()
+            end
+            awful.client.movetotag(tag)
+        end
+    end),
+    awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
+    function ()
+        local tag = awful.tag.gettags(client.focus.screen)[i]
+        if client.focus then
+            if not tag then 
+                tag = add_etc()
+            end
+            awful.client.toggletag(tag)
+        end
+    end))
 end
 
 clientbuttons = awful.util.table.join(
