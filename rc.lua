@@ -688,6 +688,9 @@ globalkeys = awful.util.table.join(
     -- Menubar
     awful.key({ modkey }, "u",     function() menubar.show() end),
 
+    -- Toggle trackpad
+    awful.key({ modkey }, "\\",    function() awful.util.spawn_with_shell("synclient TouchpadOff=$(synclient -l | grep -c 'TouchpadOff.*=.*0')") end),
+
     --Fn keys {{{
     awful.key({        }, "XF86MonBrightnessUp",   function() awful.util.spawn_with_shell("echo '5'  > /home/smith/bin/bright.fifo") end ),
     awful.key({        }, "XF86MonBrightnessDown", function() awful.util.spawn_with_shell("echo '-5' > /home/smith/bin/bright.fifo") end ),
@@ -712,7 +715,7 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "n",
         function (c)
             -- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized 5clients can't have the focus.
+            -- minimized, since minimized clients can't have the focus.
             c.minimized = true
         end),
     awful.key({ modkey,           }, "m",
