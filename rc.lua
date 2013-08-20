@@ -49,10 +49,11 @@ active_theme = themes .. "/glittershark"
 beautiful.init(active_theme .. "/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal   = "xterm"
-editor     = os.getenv("EDITOR") or "editor"
+terminal   = "urxvtc"
+editor     = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 gui_editor = "gvim "
+--gui_editor = editor_cmd
 browser    = "firefox"
 tasks      = terminal .. " -e htop "
 wifi       = terminal .. " -e 'sudo wifi-menu'"
@@ -67,14 +68,14 @@ local layouts =
 {
     -- awful.layout.suit.floating,
     awful.layout.suit.tile,           -- 1
-    awful.layout.suit.tile.left,      -- 2
-    awful.layout.suit.tile.bottom,    -- 3
-    awful.layout.suit.tile.top,       -- 4
+    -- awful.layout.suit.tile.left,
+    awful.layout.suit.tile.bottom,    -- 2
+    awful.layout.suit.tile.top,       -- 3
     -- awful.layout.suit.fair,
     -- awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,         -- 5
-    -- awful.layout.suit.spiral.dwindle,
-    -- awful.layout.suit.max,
+    awful.layout.suit.spiral,         -- 4
+    -- awful.layout.suit.spiral.dwindle 
+    awful.layout.suit.max,            -- 5
     awful.layout.suit.max.fullscreen, -- 6
     -- awful.layout.suit.magnifier
 }
@@ -117,10 +118,12 @@ tyrannical.tags = {
         init      = true,
         exclusive = false,
         screen    = {1,2},
-        layout    = awful.layout.suit.tile,
+        layout    = awful.layout.suit.tile--,
+        --[[
         class     = {
             "xterm", "urxvt", "aterm", "URxvt", "XTerm", "konsole", "terminator", "gnome-terminal"
         }
+        --]]
     },
     {
         name      = "Editor",
@@ -128,7 +131,7 @@ tyrannical.tags = {
         exclusive = false,
         screen    = screen.count()>1 and 2 or 1,
         layout    = awful.layout.suit.tile,
-        exec_once = {"gvim"},
+        --exec_once = { gui_editor },
         --class     = {"gvim", "Gvim"}
     },
     {
@@ -137,7 +140,7 @@ tyrannical.tags = {
         exclusive = false,
         screen    = {1,2},
         layout    = awful.layout.suit.tile.top,
-        exec_once = {"firefox"},
+        --exec_once = { "firefox" },
         class = {
             "Opera", "Firefox", "Rekonq", "Dillo", "Arora", "Chromium", "nightly", "minefield"
         }
@@ -148,7 +151,7 @@ tyrannical.tags = {
         exclusive = false,
         screen    = {1},
         layout    = awful.layout.suit.tile,
-        exec_once = {"gvim /home/smith/todo.txt"}
+        --exec_once = {"gvim /home/smith/todo.txt"}
         -- class     = {"gvim", "Gvim"}
     },
     {
@@ -176,6 +179,22 @@ tyrannical.tags = {
         screen    = screen.count()>1 and 2 or 1,
         layout    = awful.layout.suit.tile,
         class     = { "virtualbox" }
+    },
+    {
+        name      = "Office",
+        init      = false,
+        exclusive = false,
+        screen    = {1,2},
+        layout    = awful.layout.suit.tile,
+        class     = { "soffice.bin", "libreoffice" }
+    },
+    {
+        name      = "Skype",
+        init      = false,
+        exclusive = true,
+        screen    = 1,
+        layout    = awful.layout.suit.tile,
+        class     = { "skype" }
     }
 }
 -- }}}
@@ -321,34 +340,34 @@ mpdwidget:buttons(awful.util.table.join(awful.button({ }, 1, function () os.exec
 curr_track = nil
 vicious.register(mpdwidget, vicious.widgets.mpd,
 function(widget, args)
-	if args["{state}"] == "Play" then
-    if args["{Title}"] ~= curr_track
-     then
-        curr_track = args["{Title}"]
-        os.execute(scriptdir .. "mpdinfo")
-        old_id = naughty.notify({
-            title = "Now playing",
-            text = args["{Artist}"] .. " (" .. args["{Album}"] .. ")\n" .. args["{Title}"],
-            icon = "/tmp/mpdnotify_cover.png",
-            bg = "#060606",
-            timeout = 5,
-            replaces_id = old_id
-        }).id
-    end
-   if yawn.icon == yawn.sky_na then return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. " " .. coldef
-    elseif mailcount == 0 then return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. "<span font='Tamsyn 8'>  <span font ='Tamsyn 2'> </span></span>" .. coldef
-    else return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. coldef .. "<span font='Tamsyn 8'> <span font='Tamsyn 2'> </span></span>" 
-    end
-	 elseif args["{state}"] == "Pause" then
-    if mailcount == 0 then return gray .. "mpd: " .. coldef .. white .. "paused<span font='Tamsyn 6'> </span> " .. coldef
-    else return gray .. "mpd: " .. coldef .. white .. "paused " .. coldef
-    end
-	else
-    curr_track = nil
-		return ''
-	end
-end, 1)
--- }}}
+    if args["{state}"] == "Play" then
+        if args["{Title}"] ~= curr_track
+            then
+                curr_track = args["{Title}"]
+                os.execute(scriptdir .. "mpdinfo")
+                old_id = naughty.notify({
+                    title = "Now playing",
+                    text = args["{Artist}"] .. " (" .. args["{Album}"] .. ")\n" .. args["{Title}"],
+                    icon = "/tmp/mpdnotify_cover.png",
+                    bg = "#060606",
+                    timeout = 5,
+                    replaces_id = old_id
+                }).id
+            end
+            if yawn.icon == yawn.sky_na then return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. " " .. coldef
+            elseif mailcount == 0 then return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. "<span font='Tamsyn 8'><span font ='Tamsyn 2'></span></span>" .. coldef
+            else return gray .. args["{Artist}"] .. coldef .. white .. " " .. args["{Title}"] .. coldef .. "<span font='Tamsyn 8'><span font='Tamsyn 2'></span></span>" 
+            end
+        elseif args["{state}"] == "Pause" then
+            if mailcount == 0 then return gray .. "mpd: " .. coldef .. white .. "paused<span font='Tamsyn 6'></span> " .. coldef
+            else return gray .. "mpd: " .. coldef .. white .. "paused " .. coldef
+            end
+        else
+            curr_track = nil
+            return ''
+        end
+    end, 1)
+    -- }}}
 
 -- Battery widget {{{
 ---[[
@@ -375,12 +394,11 @@ end
 vicious.register(batwidget, vicious.widgets.bat,
 function (widget, args)
     -- plugged
-    ---[[
     if (batstate() == 'Cable plugged') then
         shown_low_notification      = false
         shown_critical_notification = false
         return ''
-        -- critical
+    -- critical
     elseif (args[2] <= 5 and batstate() == 'Discharging' and not shown_critical_notification) then
         naughty.notify{
             text     = "About to shut down",
@@ -407,7 +425,6 @@ function (widget, args)
         })
         shown_low_notification = true
     end
-    --]]
     return gray .. "Bat " .. coldef .. white .. args[2] .. "% " .. coldef
 end, 1, 'BAT0')
 --]]
@@ -509,9 +526,16 @@ first = wibox.widget.textbox('<span font="Droid Sans Mono 8"> </span>')
 --arrl_pre:set_image(beautiful.arrl_lr_pre)
 --arrl_post = wibox.widget.imagebox()
 --arrl_post:set_image(beautiful.arrl_lr_post)
+boxleft  = wibox.widget.textbox(' [ ')
+boxright = wibox.widget.textbox(' ] ')
 -- }}}
 
 -- Initialize wibox {{{
+function add_item(layout, item)
+    layout:add( boxleft  )
+    layout:add( item     )
+    layout:add( boxright )
+end
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
     mypromptbox[s] = awful.widget.prompt()
@@ -547,24 +571,17 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     right_layout:add(wibox.widget.systray())
     right_layout:add(first)
-    right_layout:add(mygmail)
+    -- right_layout:add(mygmail)
+    right_layout:add(boxleft)
     right_layout:add(yawn.icon)
     right_layout:add(yawn.widget)
-    right_layout:add(spr)
-    -- right_layout:add(caffeine)
-    right_layout:add(spr)
-    right_layout:add(spr)
-    right_layout:add(cpuwidget)
-    right_layout:add(spr)
-    right_layout:add(memwidget)
-    right_layout:add(spr)
-    right_layout:add(netwidget)
-    right_layout:add(spr)
-    right_layout:add(mpdwidget)
-    right_layout:add(volumewidget)
-    right_layout:add(spr)
-    right_layout:add(batwidget)
-    right_layout:add(spr)
+    right_layout:add(boxright)
+    add_item( right_layout, cpuwidget    )
+    add_item( right_layout, memwidget    )
+    add_item( right_layout, netwidget    )
+    add_item( right_layout, mpdwidget    )
+    add_item( right_layout, volumewidget )
+    add_item( right_layout, batwidget    )
     right_layout:add(mytextclock)
 
     -- Now bring it all together (with the tasklist in the middle)
@@ -669,18 +686,18 @@ globalkeys = awful.util.table.join(
     -- }}}
 
     -- Menubar
-    awful.key({ modkey }, "p",     function() menubar.show() end),
+    awful.key({ modkey }, "u",     function() menubar.show() end),
 
     --Fn keys {{{
-    awful.key({        }, "XF86MonBrightnessUp",   function() awful.util.spawn("/home/smith/bin/bright-control 5")  end),
-    awful.key({        }, "XF86MonBrightnessDown", function() awful.util.spawn("/home/smith/bin/bright-control -5") end),
-    awful.key({        }, "XF86AudioPrev",         function() awful.util.spawn("mpc prev")                          end),
-    awful.key({        }, "XF86AudioPlay",         function() awful.util.spawn("mpc toggle")                        end),
-    awful.key({        }, "XF86AudioNext",         function() awful.util.spawn("mpc next")                          end),
-    awful.key({        }, "XF86AudioMute",         function() awful.util.spawn("amixer set Master toggle")          end),
-    awful.key({        }, "XF86AudioRaiseVolume",  function() awful.util.spawn("amixer set Master 5%+")             end),
-    awful.key({        }, "XF86AudioLowerVolume",  function() awful.util.spawn("amixer set Master 5%-")             end),
-    awful.key({        }, "XF86Eject",             function() awful.util.spawn("slimlock")                          end)
+    awful.key({        }, "XF86MonBrightnessUp",   function() awful.util.spawn_with_shell("echo '5'  > /home/smith/bin/bright.fifo") end ),
+    awful.key({        }, "XF86MonBrightnessDown", function() awful.util.spawn_with_shell("echo '-5' > /home/smith/bin/bright.fifo") end ),
+    awful.key({        }, "XF86AudioPrev",         function() awful.util.spawn("mpc prev")                                           end ),
+    awful.key({        }, "XF86AudioPlay",         function() awful.util.spawn("mpc toggle")                                         end ),
+    awful.key({        }, "XF86AudioNext",         function() awful.util.spawn("mpc next")                                           end ),
+    awful.key({        }, "XF86AudioMute",         function() awful.util.spawn("amixer set Master toggle")                           end ),
+    awful.key({        }, "XF86AudioRaiseVolume",  function() awful.util.spawn("amixer set Master 5%+")                              end ),
+    awful.key({        }, "XF86AudioLowerVolume",  function() awful.util.spawn("amixer set Master 5%-")                              end ),
+    awful.key({        }, "XF86Eject",             function() awful.util.spawn("slimlock")                                           end )
     -- }}}
 )
 
@@ -772,18 +789,22 @@ root.keys(globalkeys)
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-                     focus = awful.client.focus.filter,
-                     keys = clientkeys,
-                     buttons = clientbuttons,
-                     size_hints_honor = false } },
+        properties = { border_width = beautiful.border_width,
+        border_color = beautiful.border_normal,
+        focus = awful.client.focus.filter,
+        keys = clientkeys,
+        buttons = clientbuttons,
+        size_hints_honor = false } },
     { rule = { class = "MPlayer" },
-      properties = { floating = true } },
+        properties = { floating = true } },
     { rule = { class = "pinentry" },
-      properties = { floating = true } },
+        properties = { floating = true } },
     { rule = { class = "gimp" },
-      properties = { floating = true } },
+        properties = { floating = true } },
+    { rule = { instance = "plugin-container" },
+        properties = { floating = true } },
+    { rule = { class = "feh" },
+        properties = { maximized = true } }
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
